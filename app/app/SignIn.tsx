@@ -1,12 +1,12 @@
-import React from 'react'
-import { Text, View } from 'react-native'
+/* React Native */
+import { Text, View } from "react-native";
 
-const SignIn = () => {
-    return (
-      <View>
-        <Text> Login Screen </Text>
-      </View>
-    )
+function SignIn() {
+	return (
+		<View>
+			<Text> Login Screen </Text>
+		</View>
+	);
 }
 
-export default SignIn
+export default SignIn;

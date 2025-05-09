@@ -1,143 +1,149 @@
-import {
-  createContext,
-  useEffect,
-  useContext,
-  type PropsWithChildren,
-} from "react";
-import { useStorageState } from "../hooks/useStorageState"; // Fixed import
+/* Hooks */
+import { createContext, useEffect, useContext, type PropsWithChildren } from "react";
+import { useStorageState } from "../hooks/useStorageState";
+
+/* Expo */
 import { router } from "expo-router";
-import axiosInstance from "@/config/axiosConfig";
+
+/* Axios */
 import axios from "axios";
+import axiosInstance from "@/config/axiosConfig";
 
 interface User {
-  id: number;
-  name: string;
-  email: string;
-  email_validated_at: string | null;
-  credits: number | null;
+  	id: number;
+	name: string;
+	email: string;
+	email_validated_at: string | null;
+	credits: number | null;
 }
 
 interface AuthContextType {
-  signIn: (token: string, user: User) => void;
-  signOut: () => void;
-  session?: string | null;
-  user?: User | null;
-  isLoading: boolean;
-  updateUser: (userData: any) => Promise<void>;
+	signIn: (token: string, user: User) => void;
+	signOut: () => void;
+	session?: string | null;
+	user?: User | null;
+	isLoading: boolean;
+	updateUser: (userData: any) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
-  signIn: () => {},
-  signOut: () => {},
-  session: null,
-  user: null,
-  isLoading: false,
-  updateUser: async () => {},
+    signIn: () => {},
+    signOut: () => {},
+    session: null,
+    user: null,
+    isLoading: false,
+    updateUser: async () => {},
 });
 
 export function useSession() {
-  const value = useContext(AuthContext);
+  	const value = useContext(AuthContext);
 
-  if (process.env.NODE_ENV !== "production" && !value) {
-    throw new Error("useSession must be used within a AuthProvider");
-  }
-  return value;
+	if (process.env.NODE_ENV !== "production" && !value) {
+		throw new Error("useSession must be used within a AuthProvider");
+	}
+
+	return value;
 }
 
 export function SessionProvider({ children }: PropsWithChildren) {
-  const [[isLoading, session], setSession] = useStorageState("session");
-  const [[, user], setUser] = useStorageState("user");
+	const [[isLoading, session], setSession] = useStorageState("session");
+	const [[, user], setUser] = useStorageState("user");
 
-  // function to load user info
-  const loadUserInfo = async (token: string) => {
-    try {
-      const response = await axiosInstance.get("api/user", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setUser(JSON.stringify(response.data));
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 401) {
-        console.error("Unauthorized, please sign in again");
-        setSession(null);
-        setUser(null);
-        router.replace("/SignIn");
-      } else {
-        console.error("Error loading user info:", error);
-      }
-    }
-  };
+	// function to load user info
+	async function loadUserInfo(token: string) {
+		try {
+			const response = await axiosInstance.get("api/user", {
+				headers: {
+				Authorization: `Bearer ${token}`,
+				},
+			});
+			setUser(JSON.stringify(response.data));
+		} catch (error) {
 
-  // sign out function
-  const handleSignOut = async () => {
-    try {
-      if (session) {
-        await axiosInstance.post("api/logout", null, {
-          headers: {
-            Authorization: `Bearer ${session}`,
-          },
-        });
+		if (axios.isAxiosError(error) && error.response?.status === 401) {
+				console.error("Unauthorized, please sign in again");
+				setSession(null);
+				setUser(null);
+				router.replace("/SignIn");
+			} else {
+				console.error("Error loading user info:", error);
+			}
+		}
+  	}
 
-        setSession(null);
-        setUser(null);
-        router.replace("/SignIn");
-      }
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
-  };
+  	// sign out function
+	async function handleSignOut() {
+		try {
+			if (session) {
+				await axiosInstance.post("api/logout", null, {
+				headers: {
+					Authorization: `Bearer ${session}`,
+				},
+			});
 
-  useEffect(() => {
-    if (session) {
-      loadUserInfo(session);
-    }
-  }, [session]);
+				setSession(null);
+				setUser(null);
+				router.replace("/SignIn");
+			}
+		} catch (error) {
+			console.error("Error signing out:", error);
+		}
+	}
 
-  // parsed user data if available
-  const parsedUser = user
-    ? (() => {
-        try {
-          return JSON.parse(user);
-        } catch (error) {
-          console.error("Error parsing user data:", error);
-          return null;
-        }
-      })()
-    : null;
+	useEffect(() => {
+		if (session) {
+			loadUserInfo(session);
+		}
 
-  // function to update the user data with proper JSON stringification
-  const handleUserUpdate = async (userData: any) => {
-    try {
-      const userString = JSON.stringify(userData);
-      await setUser(userString);
-    } catch (error) {
-      console.error("Error updating user data:", error);
-    }
-  };
+	}, [session]);
 
-  // sign user in
-  const handleSignIn = async (token: string, userData: User) => {
-    try {
-      await setSession(token);
-      await setUser(JSON.stringify(userData));
-    } catch (error) {
-      console.error("Error signing in:", error);
-    }
-  };
+	// parsed user data if available
+	const parsedUser = user
+		? (function () {
+			try {
+				return JSON.parse(user);
+
+			} catch (error) {
+				console.error("Error parsing user data:", error);
+				return null;
+			}
+		})()
+		: null;
+
+		// function to update the user data with proper JSON stringification
+		async function handleUserUpdate(userData: any) {
+			try {
+				const userString = JSON.stringify(userData);
+				await setUser(userString);
+
+			} catch (error) {
+				console.error("Error updating user data:", error);
+			}
+		}
+
+	// sign user in
+	async function handleSignIn(token: string, userData: User) {
+		try {
+			await setSession(token);
+			await setUser(JSON.stringify(userData));
+
+		} catch (error) {
+			console.error("Error signing in:", error);
+		}
+	}
 
   return (
-    <AuthContext.Provider
-      value={{
-        signIn: handleSignIn,
-        signOut: handleSignOut,
-        session,
-        user: parsedUser,
-        isLoading,
-        updateUser: handleUserUpdate,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+		<AuthContext.Provider
+			value={{
+				signIn: handleSignIn,
+				signOut: handleSignOut,
+				session,
+				user: parsedUser,
+				isLoading,
+				updateUser: handleUserUpdate,
+			}}
+		>
+		{children}
+		</AuthContext.Provider>
+  	);
 }
