@@ -9,21 +9,30 @@ import { useTheme } from "../../context/ThemeContext";
 
 interface InputProps extends TextInputProps {
   error?: string;
+  autoCapitalize?: "none" | "sentences" | "words" | "characters";
 }
 
-function Input({ value, placeholder, keyboardType, secureTextEntry, onChangeText, error = "",}: InputProps) {
+function Input({
+  value,
+  placeholder,
+  keyboardType,
+  secureTextEntry,
+  onChangeText,
+  error = "",
+  autoCapitalize = "none",
+}: InputProps) {
   const [isFocused, setIsFocused] = useState(false);
   const { currentTheme } = useTheme();
 
   return (
     <View className="w-full mb-4">
       <TextInput
-        className={`w-full h-12 border rounded-lg px3 mb-1
-                    ${
-                      currentTheme === "dark"
-                        ? "bg-gray-800 text-white"
-                        : "bg-white text-gray-900"
-                    } ${
+        className={`w-full h-12 border rounded-lg px-3 mb-1
+                        ${
+                          currentTheme === "dark"
+                            ? "bg-gray-800 text-white"
+                            : "bg-white text-gray-900"
+                        } ${
           isFocused
             ? "border-primary"
             : currentTheme === "dark"
@@ -38,8 +47,12 @@ function Input({ value, placeholder, keyboardType, secureTextEntry, onChangeText
         onChangeText={onChangeText}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
+        autoCapitalize={autoCapitalize}
       />
-      {!!error && <Text className="text-red-500 text-xs">{error}</Text>}
+
+      {!!error && (
+        <Text className="text-red-500 text-left text-xs">{error}</Text>
+      )}
     </View>
   );
 }
