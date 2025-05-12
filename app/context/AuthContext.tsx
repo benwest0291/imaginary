@@ -73,22 +73,41 @@ export function SessionProvider({ children }: PropsWithChildren) {
 
   	// sign out function
 	async function handleSignOut() {
-		try {
-			if (session) {
-				await axiosInstance.post("api/logout", null, {
-				headers: {
-					Authorization: `Bearer ${session}`,
-				},
-			});
+      try {
+        if (session) {
+          try {
+            // Try to communicate with server, but don't wait for it
+            await axiosInstance.post("api/logout", null, {
+              headers: {
+                Authorization: `Bearer ${session}`,
+              },
+              timeout: 3000, // Add timeout to prevent long wait
+            });
+          } catch (error) {
+            // Log but continue with client-side logout even if server call fails
+            console.log("Server logout failed, continuing with client logout");
+          }
 
-				setSession(null);
-				setUser(null);
-				router.replace("/SignIn");
-			}
-		} catch (error) {
-			console.error("Error signing out:", error);
-		}
-	}
+          // Always clear local state regardless of server response
+          await setSession(null);
+          await setUser(null);
+          router.replace("/SignIn");
+        }
+      } catch (error) {
+        console.error("Error in client-side logout:", error);
+
+        // Force logout even if something went wrong above
+        try {
+          await setSession(null);
+          await setUser(null);
+          router.replace("/SignIn");
+        } catch (finalError) {
+          console.error("Critical error during forced logout:", finalError);
+          // As a last resort, try to clear session with a page reload
+          alert("Trouble logging out. Please restart the app.");
+        }
+      }
+    }
 
 	useEffect(() => {
 		if (session) {

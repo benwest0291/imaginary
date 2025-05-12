@@ -55,22 +55,28 @@ function SignIn() {
       const response = await axiosInstance.post("/api/login", data);
       await signIn(response.data.token, response.data.user);
       router.replace("/");
+
     } catch (error) {
       if (isAxiosError(error)) {
         const responseData = error.response?.data;
 
         if (responseData?.errors) {
           setErrors(responseData.errors);
+
         } else if (responseData?.message) {
           Alert.alert("Error", responseData.message);
+
         } else {
           Alert.alert("Error", "An unexpected error occurred.");
+
         }
       } else {
         Alert.alert("Error", "An unexpected error occurred.");
+
       }
     } finally {
       setLoading(false);
+	  
     }
   };
 

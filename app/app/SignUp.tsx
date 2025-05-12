@@ -9,7 +9,7 @@ import Button from "@/components/core/Button";
 import Input from "@/components/core/Input";
 
 /* Expo */
-import { Link } from "expo-router";
+import { Link, router } from "expo-router"; 
 
 /* Axios */
 import axiosInstance from "@/config/axiosConfig";
@@ -57,6 +57,9 @@ function SignUp() {
       setSuccessMessage(
         "Account created successfully. Please check your email for verification."
       );
+
+	  router.replace("/(app)");
+
     } catch (error) {
       if (isAxiosError(error)) {
         const responseData = error.response?.data;
