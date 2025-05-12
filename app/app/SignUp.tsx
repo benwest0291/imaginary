@@ -1,14 +1,5 @@
 /* React Native */
-import {
-  View,
-  Text,
-  Image,
-  Alert,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-} from "react-native";
+import { View, Text, Image, Alert, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 
 /* Hooks */
 import { useState } from "react";
@@ -129,6 +120,7 @@ function SignUp() {
               Imageinary
             </Text>
           </View>
+
           <Text
             className={`text-2xl font-bold mb-4 ${
               currentTheme === "dark" ? "text-white" : "text-gray-900"
@@ -136,11 +128,13 @@ function SignUp() {
           >
             Sign Up
           </Text>
+
           {!!successMessage && (
             <Text className="bg-green-500 text-white rounded-lg py-3 px-4 mb-4">
               {successMessage}
             </Text>
           )}
+          
           <Input
             value={data.name}
             placeholder="Name"
@@ -175,11 +169,9 @@ function SignUp() {
             className="w-full bg-emerald-500 mb-4 rounded-xl"
             onPress={handleSignup}
             disabled={loading}
+            loading={loading}
           >
             <View className="flex-row items-center justify-center">
-              {loading && (
-                <ActivityIndicator size="small" color="#fff" className="mr-3" />
-              )}
               <Text className="text-white text-center">Sign Up</Text>
             </View>
           </Button>

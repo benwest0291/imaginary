@@ -6,11 +6,14 @@ import { Stack } from "expo-router";
 
 /* Context */
 import { ThemeProvider } from "../context/ThemeContext";
+import { SessionProvider } from "@/context/AuthContext";
 
 export default function RootLayout() {
 	return (
-		<ThemeProvider>
-			<Stack />
-		</ThemeProvider>
-	);
+    <SessionProvider>
+      <ThemeProvider>
+        <Stack />
+      </ThemeProvider>
+    </SessionProvider>
+  );
 }
