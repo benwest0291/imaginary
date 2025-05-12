@@ -1,12 +1,16 @@
+/* React Native */
+import { ActivityIndicator, Text, View } from "react-native";
+
+/* Context & Constants */
 import { useSession } from "@/context/AuthContext";
 import { useThemeColors } from "@/hooks/useThemeColors";
+
+/* Expo */
 import { Redirect, Stack } from "expo-router";
-import { ActivityIndicator, Text, View } from "react-native";
 
 export default function AppLayout() {
   const { session, isLoading } = useSession();
   const colors = useThemeColors();
-
 
   if (isLoading) {
     return (
