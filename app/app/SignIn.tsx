@@ -53,34 +53,34 @@ function SignIn() {
 
     try {
       const response = await axiosInstance.post("/api/login", data);
-      await signIn(response.data.token, response.data.user);
-      router.replace("/");
+        await signIn(response.data.token, response.data.user);
+        router.replace("/");
 
     } catch (error) {
-      if (isAxiosError(error)) {
-        const responseData = error.response?.data;
+		if (isAxiosError(error)) {
+			const responseData = error.response?.data;
 
-        if (responseData?.errors) {
-          setErrors(responseData.errors);
+			if (responseData?.errors) {
+				setErrors(responseData.errors);
 
-        } else if (responseData?.message) {
-          Alert.alert("Error", responseData.message);
+			} else if (responseData?.message) {
+				Alert.alert("Error", responseData.message);
 
-        } else {
-          Alert.alert("Error", "An unexpected error occurred.");
+			} else {
+				Alert.alert("Error", "An unexpected error occurred.");
 
-        }
-      } else {
-        Alert.alert("Error", "An unexpected error occurred.");
+			}
+		} else {
+				Alert.alert("Error", "An unexpected error occurred.");
 
-      }
+		}
     } finally {
-      setLoading(false);
+      	setLoading(false);
 	  
     }
   };
 
-  return (
+	return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       className={`flex-1 ${
@@ -96,12 +96,12 @@ function SignIn() {
           <View className="items-center mb-8">
             <Image
               source={require("../assets/images/welcome.png")}
-              className="w-36 h-36"
+              className="w-72 h-72"
               resizeMode="contain"
             />
 
             <Text
-              className={`text-2xl font-bold mt-8 ${
+              className={`text-2xl font-bold ${
                 currentTheme === "dark" ? "text-white" : "text-gray-900"
               }`}
             >
