@@ -10,11 +10,12 @@ import axios from "axios";
 import axiosInstance from "@/config/axiosConfig";
 
 interface User {
-  	id: number;
-	name: string;
-	email: string;
-	email_validated_at: string | null;
-	credits: number | null;
+  id: number;
+  name: string;
+  email: string;
+  email_verified_at: string | null;
+  email_validated_at: string | null;
+  credits: number | null;
 }
 
 interface AuthContextType {
